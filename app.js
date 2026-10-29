@@ -102,8 +102,21 @@
     const tel = "tel:+" + (phoneDigits.length === 10 ? "1" + phoneDigits : phoneDigits);
     all("[data-booking-link]").forEach(link => {
       link.href = bookingUrl || tel;
-      if (bookingUrl) { link.textContent = "Book Now"; link.target = "_blank"; link.rel = "noopener"; }
-      else { link.textContent = "Call to Book"; link.removeAttribute("target"); link.removeAttribute("rel"); }
+      if (bookingUrl) {
+        if (link.matches(".hero-primary-cta")) {
+          const mobileLabel = one(".hero-call-mobile-label", link), desktopLabel = one(".hero-call-desktop-label", link);
+          if (mobileLabel) mobileLabel.textContent = "Book Now";
+          if (desktopLabel) { const icon = one("svg", desktopLabel); desktopLabel.replaceChildren(...(icon ? [icon, document.createTextNode("Book Now")] : [document.createTextNode("Book Now")])); }
+        } else link.textContent = "Book Now";
+        link.target = "_blank"; link.rel = "noopener";
+      } else {
+        if (link.matches(".hero-primary-cta")) {
+          const mobileLabel = one(".hero-call-mobile-label", link), desktopLabel = one(".hero-call-desktop-label", link);
+          if (mobileLabel) mobileLabel.textContent = "Call to Book";
+          if (desktopLabel) { const icon = one("svg", desktopLabel); desktopLabel.replaceChildren(...(icon ? [icon, document.createTextNode("Call (647) 618-2685")] : [document.createTextNode("Call (647) 618-2685")])); }
+        } else link.textContent = "Call to Book";
+        link.removeAttribute("target"); link.removeAttribute("rel");
+      }
     });
     const note = one("#booking-note"); if (note) note.hidden = Boolean(bookingUrl);
     const call = one("#call-button"); if (call) { call.href = tel; call.hidden = !phoneDigits; }
@@ -247,4 +260,21 @@
     });
     hero.addEventListener("pointerleave", () => { heroImage.style.transform = "scale(1.025)"; });
   });
+
+  safeInit("desktop wall motion", () => {
+    const wall=one(".desktop-photo-wall"),tilt=one(".desktop-photo-wall .wall-tilt"),hero=one(".hero");
+    if(!wall||!tilt||!hero||!window.matchMedia("(min-width:768px)").matches)return;
+    all(".desktop-photo-wall .wall-column").forEach(column=>{const img=column.querySelector(".wall-card:not([aria-hidden='true']) img");if(img)img.loading="eager";});
+    if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+    try{
+      if(window.matchMedia("(pointer:fine)").matches){
+        let raf=0,px=0,py=0;
+        wall.addEventListener("pointermove",event=>{const r=wall.getBoundingClientRect();px=((event.clientX-r.left)/Math.max(1,r.width)-.5)*24;py=((event.clientY-r.top)/Math.max(1,r.height)-.5)*16;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;tilt.style.setProperty("--wall-x",px+"px");tilt.style.setProperty("--wall-y",py+"px");});},{passive:true});
+        wall.addEventListener("pointerleave",()=>{tilt.style.setProperty("--wall-x","0px");tilt.style.setProperty("--wall-y","0px");});
+        const cta=one(".hero-primary-cta");if(cta){cta.addEventListener("pointermove",event=>{const r=cta.getBoundingClientRect(),x=(event.clientX-r.left)/Math.max(1,r.width)-.5;cta.style.setProperty("--mag-x",x*12+"px");cta.style.setProperty("--mag-y",Math.abs(x)*-3+"px");},{passive:true});cta.addEventListener("pointerleave",()=>{cta.style.setProperty("--mag-x","0px");cta.style.setProperty("--mag-y","0px");});}
+      }
+    }catch(error){console.error("[Ryan's Salon] desktop pointer motion failed:",error);}
+    try{let raf=0;const onScroll=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const r=hero.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight){const y=window.scrollY*.12;tilt.style.transform="rotateY(-14deg) rotateZ(5deg) scale(1.08) translate3d(var(--wall-x,0px),calc(var(--wall-y,0px) + "+y+"px),0)";}});};window.addEventListener("scroll",onScroll,{passive:true});}catch(error){console.error("[Ryan's Salon] desktop scroll parallax failed:",error);}
+  });
+
 })();
