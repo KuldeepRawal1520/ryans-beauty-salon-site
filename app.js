@@ -80,7 +80,8 @@
     const update=()=>header.classList.toggle("scrolled",window.scrollY>40);
     update();window.addEventListener("scroll",update,{passive:true});
   });
-\n  safeInit("mobile navigation", () => {
+
+  safeInit("mobile navigation", () => {
     const nav = one(".nav-wrap"), toggle = one(".menu-toggle");
     if (!nav || !toggle) return;
     const close = () => { nav.classList.remove("menu-open"); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", "Open navigation menu"); };
@@ -218,8 +219,23 @@
     const day = dayMap[values.weekday], minutes = Number(values.hour) * 60 + Number(values.minute);
     const today = hours.find(item => Array.isArray(item.dayIndexes) && item.dayIndexes.includes(day));
     const parse = time => { const [h, m] = String(time || "").split(":").map(Number); return (h || 0) * 60 + (m || 0); };
-    status.textContent = today && minutes >= parse(today.open) && minutes < parse(today.close) ? "Open now" : "Closed now";
+    const formatClock = value => {
+      const [h, m] = String(value || "09:00").split(":").map(Number);
+      const hour = h % 12 || 12;
+      return hour + (m ? ":" + String(m).padStart(2, "0") : "") + (h >= 12 ? " PM" : " AM");
+    };
+    const nextOpen = () => {
+      for (let offset = 1; offset <= 7; offset++) {
+        const dayIndex = (day + offset) % 7;
+        const next = hours.find(item => Array.isArray(item.dayIndexes) && item.dayIndexes.includes(dayIndex));
+        if (next) return offset === 1 ? "tomorrow " + formatClock(next.open) : ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dayIndex] + " " + formatClock(next.open);
+      }
+      return "soon";
+    };
+    const isOpen = Boolean(today && minutes >= parse(today.open) && minutes < parse(today.close));
+    status.textContent = isOpen ? "Open now · until " + formatClock(today.close) : "Closed · opens " + (today && minutes < parse(today.open) ? formatClock(today.open) : nextOpen());
     status.setAttribute("aria-label", status.textContent + ", local salon time");
+    const meta = status.closest(".hero-meta"); if (meta) meta.classList.toggle("is-closed", !isOpen);
   });
 
   safeInit("hero motion", () => {
