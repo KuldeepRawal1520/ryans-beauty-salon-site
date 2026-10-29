@@ -17,4 +17,4 @@ Open `index.html` in a browser. This is a static site and does not require a bui
 The site is intended to deploy from the `main` branch on Vercel. Booking currently uses a telephone link because no online booking URL is configured.
 
 ## Images
-The current live site uses designed gradient placeholders instead of image assets. Add locally licensed salon imagery only when available and update the markup/styles accordingly.
+The `images/` directory contains the salon's photo assets. `hero-red.jpg` is used as the full-bleed hero image, `storefront.jpg` appears in the location section, and the remaining 13 images are displayed in the filterable Colour, Cuts, and Brows gallery. The ash-blonde balayage photo is cropped square from the top to avoid showing its bottom text overlay. Image elements retain gradient fallbacks for failed loads.
