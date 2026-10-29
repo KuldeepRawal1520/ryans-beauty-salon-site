@@ -23,7 +23,7 @@
   safeInit("booking and contact links", () => {
     const bookingUrl = typeof cfg.bookingUrl === "string" ? cfg.bookingUrl.trim() : "";
     const phoneDigits = String(cfg.phone || "6476182685").replace(/\D/g, "");
-    const tel = "tel:+" + phoneDigits;
+    const tel = "tel:+" + (phoneDigits.length === 10 ? "1" + phoneDigits : phoneDigits);
     all("[data-booking-link]").forEach(link => {
       link.href = bookingUrl || tel;
       if (bookingUrl) { link.textContent = "Book Now"; link.target = "_blank"; link.rel = "noopener"; }
