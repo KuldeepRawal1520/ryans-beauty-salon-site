@@ -5,7 +5,82 @@
   const all = (selector, root = document) => Array.from(root.querySelectorAll(selector));
   const safeInit = (name, init) => { try { init(); } catch (error) { console.error("[Ryan's Salon] " + name + " initialization failed:", error); } };
 
-  safeInit("mobile navigation", () => {
+
+  safeInit("neon intro", () => {
+    const overlay = one(".neon-intro");
+    if (!overlay || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { if (overlay) overlay.remove(); return; }
+    let seen = false;
+    try { seen = sessionStorage.getItem("ryanSalonNeonIntroSeen") === "1"; } catch (_) {}
+    const remove = () => { overlay.classList.add("is-wiping"); window.setTimeout(() => { overlay.classList.add("is-hidden"); overlay.remove(); document.body.classList.remove("intro-playing"); }, 520); };
+    if (seen) { overlay.remove(); return; }
+    document.body.classList.add("intro-playing");
+    try { sessionStorage.setItem("ryanSalonNeonIntroSeen", "1"); } catch (_) {}
+    overlay.addEventListener("click", remove, { once: true });
+    window.setTimeout(remove, 2200);
+    window.setTimeout(() => { if (overlay.isConnected) { overlay.classList.add("is-hidden"); overlay.remove(); document.body.classList.remove("intro-playing"); } }, 3500);
+  });
+  safeInit("hero coverflow", () => {
+    const gallery = one(".hero-gallery"); if (!gallery) return;
+    const cards = all(".hero-photo-card", gallery), dots = all("[data-hero-dot]", gallery);
+    if (!cards.length) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let active = 0, timer = 0, touchedAt = 0, pointerStart = null;
+    const mobile = () => window.matchMedia("(max-width: 767px)").matches;
+    const apply = () => {
+      cards.forEach((card,i) => {
+        const rel = (i-active+cards.length)%cards.length;
+        card.classList.toggle("is-active",i===active);
+        if(mobile()) {
+          const offsets=[0,1,-1,2,-2]; const pos=offsets.indexOf(rel);
+          const x=pos===0?0:pos===1?56:pos===2?-56:pos===3?100:-100;
+          const scale=pos===0?1:pos===1||pos===2?.82:.68;
+          const rot=pos===0?0:pos===1?12:pos===2?-12:pos===3?22:-22;
+          card.style.setProperty("--tx",x+"%");card.style.setProperty("--cs",scale);card.style.setProperty("--rz",rot+"deg");
+          card.style.opacity=pos<3?"1":".72";card.style.zIndex=String(8-pos);
+        } else {
+          const positions=[{x:-68,z:45,s:1,r:-7},{x:138,z:-100,s:.78,r:9},{x:92,z:-35,s:.87,r:-2},{x:-126,z:-95,s:.76,r:4},{x:25,z:-145,s:.7,r:3}];
+          const p=positions[i];card.style.setProperty("--tx",p.x+"px");card.style.setProperty("--tz",p.z+"px");card.style.setProperty("--cs",p.s);card.style.setProperty("--rz",p.r+"deg");card.style.opacity="1";
+        }
+      });
+      dots.forEach((dot,i)=>dot.classList.toggle("active",i===active));
+    };
+    const advance=()=>{if(Date.now()-touchedAt<6000)return;active=(active+1)%cards.length;apply();};
+    const start=()=>{if(timer)clearInterval(timer);if(!reduced)timer=setInterval(advance,mobile()?3000:3500);};
+    dots.forEach(dot=>dot.addEventListener("click",()=>{active=Number(dot.dataset.heroDot)||0;touchedAt=Date.now();apply();}));
+    gallery.addEventListener("touchstart",e=>{pointerStart=e.changedTouches[0]?.clientX??null;touchedAt=Date.now();},{passive:true});
+    gallery.addEventListener("touchend",e=>{if(pointerStart===null)return;const dx=e.changedTouches[0].clientX-pointerStart;pointerStart=null;if(Math.abs(dx)>35){active=(active+(dx<0?1:cards.length-1))%cards.length;apply();}touchedAt=Date.now();},{passive:true});
+    gallery.addEventListener("mouseenter",()=>{if(timer)clearInterval(timer);});
+    gallery.addEventListener("mouseleave",start);
+    window.addEventListener("resize",apply);
+    apply();start();
+    if(window.matchMedia("(hover:hover) and (pointer:fine) and (min-width:768px)").matches&&!reduced){
+      gallery.addEventListener("pointermove",e=>{const r=gallery.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;gallery.style.transform="rotateY("+(-x*8)+"deg) rotateX("+(y*5)+"deg)";});
+      gallery.addEventListener("pointerleave",()=>{gallery.style.transform="";});
+    }
+  });
+  safeInit("rotating hero reviews", () => {
+    const line=one(".hero-review-line");if(!line)return;
+    const items=[
+      {quote:"The color turned out exactly how I imagined, I love it so much.",name:"Mary Joy R."},
+      {quote:"The best in the city!",name:"Viraj P."},
+      {quote:"Excellent service.",name:"Naman G."}
+    ];
+    let index=0;const q=one(".hero-review-quote",line),n=one(".hero-review-name",line);if(!q||!n)return;
+    window.setInterval(()=>{line.classList.add("is-fading");window.setTimeout(()=>{index=(index+1)%items.length;q.textContent="“"+items[index].quote+"”";n.textContent=items[index].name;line.classList.remove("is-fading");},260);},4000);
+  });
+  safeInit("sticky call bar visibility", () => {
+    const bar=one(".mobile-cta"),heroButtons=one(".hero-actions");if(!bar||!heroButtons)return;
+    if(!("IntersectionObserver" in window)){bar.classList.remove("cta-hidden");return;}
+    bar.classList.add("cta-hidden");
+    const observer=new IntersectionObserver(entries=>{bar.classList.toggle("cta-hidden",entries[0].isIntersecting);});
+    observer.observe(heroButtons);
+  });
+  safeInit("header scroll state", () => {
+    const header=one(".nav-wrap");if(!header)return;
+    const update=()=>header.classList.toggle("scrolled",window.scrollY>40);
+    update();window.addEventListener("scroll",update,{passive:true});
+  });
+\n  safeInit("mobile navigation", () => {
     const nav = one(".nav-wrap"), toggle = one(".menu-toggle");
     if (!nav || !toggle) return;
     const close = () => { nav.classList.remove("menu-open"); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", "Open navigation menu"); };
