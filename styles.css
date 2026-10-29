@@ -209,3 +209,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
  .hero:before{display:block!important;content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(420px circle at var(--spot-x,50%) var(--spot-y,50%),rgba(228,0,43,.095),transparent 72%),linear-gradient(145deg,rgba(201,206,214,.018),transparent 45%)}
  .desktop-photo-wall{z-index:1}.hero-copy{z-index:2}
 }
+
+
+@media(min-width:768px){.nav-book{display:inline-flex!important}.nav-call-desktop-label{white-space:nowrap}}
+@media(min-width:768px) and (max-width:900px){.nav-links{gap:9px}.nav-book{font-size:10px;padding-inline:11px}.brand{font-size:10px}.brand-mark{width:32px;height:32px}}
