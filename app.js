@@ -271,6 +271,8 @@
         let raf=0,px=0,py=0;
         wall.addEventListener("pointermove",event=>{const r=wall.getBoundingClientRect();px=((event.clientX-r.left)/Math.max(1,r.width)-.5)*24;py=((event.clientY-r.top)/Math.max(1,r.height)-.5)*16;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;tilt.style.setProperty("--wall-x",px+"px");tilt.style.setProperty("--wall-y",py+"px");});},{passive:true});
         wall.addEventListener("pointerleave",()=>{tilt.style.setProperty("--wall-x","0px");tilt.style.setProperty("--wall-y","0px");});
+        let spotRaf=0,spotX=50,spotY=50;
+        hero.addEventListener("pointermove",event=>{const r=hero.getBoundingClientRect();spotX=((event.clientX-r.left)/Math.max(1,r.width))*100;spotY=((event.clientY-r.top)/Math.max(1,r.height))*100;if(spotRaf)return;spotRaf=requestAnimationFrame(()=>{spotRaf=0;hero.style.setProperty("--spot-x",spotX+"%");hero.style.setProperty("--spot-y",spotY+"%");});},{passive:true});
         const cta=one(".hero-primary-cta");if(cta){cta.addEventListener("pointermove",event=>{const r=cta.getBoundingClientRect(),x=(event.clientX-r.left)/Math.max(1,r.width)-.5;cta.style.setProperty("--mag-x",x*12+"px");cta.style.setProperty("--mag-y",Math.abs(x)*-3+"px");},{passive:true});cta.addEventListener("pointerleave",()=>{cta.style.setProperty("--mag-x","0px");cta.style.setProperty("--mag-y","0px");});}
       }
     }catch(error){console.error("[Ryan's Salon] desktop pointer motion failed:",error);}
