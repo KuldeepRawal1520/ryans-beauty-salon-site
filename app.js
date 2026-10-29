@@ -37,11 +37,11 @@
         const effective=d-dragProgress,ae=Math.abs(effective);
         const x=effective*58, z=-ae*90, ry=reducedQuery.matches?0:effective*-38, scale=1-ae*.1;
         card.classList.toggle("is-active",i===active);
-        card.style.setProperty("--slot-x",x+"%");
+        card.style.setProperty("--slot-x",(d*58)+"%");
+        card.style.setProperty("--drag-x",live?dragPx+"px":"0px");
         card.style.setProperty("--slot-z",z+"px");
         card.style.setProperty("--slot-ry",ry+"deg");
         card.style.setProperty("--slot-scale",String(scale));
-        card.style.setProperty("--drag-x","0px");
         card.style.opacity=ad===0?"1":ad===1?".85":ad===2?".5":"0";
         card.style.visibility=ad>2?"hidden":"visible";
         card.style.zIndex=String(20-ad);
