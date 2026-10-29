@@ -1,1 +1,159 @@
-(() => { "use strict"; const cfg = window.SALON_CONFIG || {}; const $ = (s, r=document) => r.querySelector(s); const $$ = (s, r=document) => Array.from(r.querySelectorAll(s)); try { const nav=$(".nav-wrap"),toggle=$(".menu-toggle"); if(nav&&toggle){toggle.addEventListener("click",()=>{const open=nav.classList.toggle("menu-open");toggle.setAttribute("aria-expanded",String(open));});$$(".nav-links a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("menu-open");toggle.setAttribute("aria-expanded","false");}));} } catch(e){console.error("Navigation enhancement failed:",e)} try {const url=typeof cfg.bookingUrl==="string"?cfg.bookingUrl.trim():"";const phone=typeof cfg.phone==="string"?cfg.phone.trim():"";const tel="tel:"+phone.replace(/[^+\\d]/g,"");$$("[data-booking-link]").forEach(a=>{a.href=url||tel;a.textContent=url?"Book Now":"Call to Book";if(url){a.target="_blank";a.rel="noopener"}else{a.removeAttribute("target");a.removeAttribute("rel")}});const note=$("#booking-note");if(note)note.hidden=Boolean(url);const call=$("#call-button");if(call){call.hidden=!phone;if(phone)call.href=tel;else call.removeAttribute("href")}$$(".mobile-cta a:first-child").forEach(a=>{a.hidden=!phone;if(phone)a.href=tel});}catch(e){console.error("Booking and contact controls failed:",e)} try {$$(".review-card").forEach(card=>{const p=$(".review-text",card),b=$(".review-expand",card);if(!p||!b)return;const expandedHeight=p.scrollHeight;p.classList.add("clamped");if(expandedHeight>p.clientHeight+2){b.hidden=false;b.addEventListener("click",()=>{const expanded=p.classList.toggle("expanded");b.textContent=expanded?"Read less":"Read more";b.setAttribute("aria-expanded",String(expanded))})}})}catch(e){console.error("Review expansion failed:",e)} try { const tabs=$$(".service-tab"),groups=$$(".service-group");tabs.forEach(tab=>tab.addEventListener("click",()=>{const i=Number(tab.dataset.category);groups.forEach((g,j)=>g.hidden=j!==i);tabs.forEach(t=>{const active=t===tab;t.classList.toggle("active",active);t.setAttribute("aria-selected",String(active));});}));groups.forEach((g,i)=>g.hidden=i!==0);}catch(e){console.error("Service filters failed:",e)} try { const lb=$("#lightbox"),caption=$("#lightbox-caption"),image=$("#lightbox-image"); let current=0; const cards=()=>$(".gallery-card:not([hidden])"); const allCards=()=>$(".gallery-card"); const show=(card)=>{if(!card)return;current=allCards().indexOf(card);const src=card.dataset.photo||"",alt=card.dataset.alt||"Salon hair or beauty service";if(image){image.style.display="block";image.parentElement.classList.remove("fallback-tile");image.src=src;image.alt=alt;image.style.aspectRatio=src.includes("ash-blonde-balayage")?"1 / 1":"3 / 4";image.style.objectFit=src.includes("ash-blonde-balayage")?"cover":"contain";image.style.objectPosition=src.includes("ash-blonde-balayage")?"top":"center";}if(caption)caption.textContent=card.dataset.gallery||alt;lb?.classList.add("open");lb?.setAttribute("aria-hidden","false");};const close=()=>{lb?.classList.remove("open");lb?.setAttribute("aria-hidden","true")};const move=(step)=>{const visible=cards();if(!visible.length)return;let idx=visible.findIndex(c=>allCards().indexOf(c)===current);idx=(idx+step+visible.length)%visible.length;show(visible[idx]);};if(lb){allCards().forEach(card=>card.addEventListener("click",()=>show(card)));$(".lightbox-close",lb)?.addEventListener("click",close);$(".lightbox-prev",lb)?.addEventListener("click",()=>move(-1));$(".lightbox-next",lb)?.addEventListener("click",()=>move(1));lb.addEventListener("click",e=>{if(e.target===lb)close()});document.addEventListener("keydown",e=>{if(e.key==="Escape")close();if(lb.classList.contains("open")&&e.key==="ArrowLeft")move(-1);if(lb.classList.contains("open")&&e.key==="ArrowRight")move(1)});let startX=0;lb.addEventListener("touchstart",e=>{startX=e.changedTouches[0].clientX},{passive:true});lb.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>45)move(dx<0?1:-1)},{passive:true});}$(".gallery-filter").forEach(btn=>btn.addEventListener("click",()=>{const filter=btn.dataset.filter;$(".gallery-filter").forEach(b=>{const active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active))});allCards().forEach(card=>card.hidden=card.dataset.category!==filter);if(lb?.classList.contains("open"))close()}));$(".gallery-filter[data-filter='colour']").forEach(btn=>allCards().forEach(card=>card.hidden=card.dataset.category!=="colour"));const hero=$(".hero"),heroBg=$(".hero-bg");if(hero&&heroBg&&!matchMedia("(prefers-reduced-motion: reduce)").matches){hero.addEventListener("pointermove",e=>{const r=hero.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;heroBg.style.transform=`scale(1.06) translate3d(${-x*10}px,${-y*8}px,0)`});hero.addEventListener("pointerleave",()=>{heroBg.style.transform="scale(1.025)"})}}catch(e){console.error("Gallery lightbox failed:",e)} try {const y=$("#year");if(y)y.textContent=String(new Date().getFullYear());const status=$("#open-status");if(status){const now=new Date(),day=now.getDay(),mins=now.getHours()*60+now.getMinutes(),hours=Array.isArray(cfg.hours)?cfg.hours:[{open:"09:00",close:"20:00",dayIndexes:[1,2,3,4,5]},{open:"09:00",close:"18:00",dayIndexes:[6]},{open:"11:00",close:"17:00",dayIndexes:[0]}],today=hours.find(h=>Array.isArray(h.dayIndexes)&&h.dayIndexes.includes(day)),parse=t=>{const a=String(t||"").split(":").map(Number);return(a[0]||0)*60+(a[1]||0)};status.textContent=today&&mins>=parse(today.open)&&mins<parse(today.close)?"Open now":"Check today's hours before visiting";}}catch(e){console.error("Hours status failed:",e)} })();
+(() => {
+  "use strict";
+  const cfg = window.SALON_CONFIG || {};
+  const one = (selector, root = document) => root.querySelector(selector);
+  const all = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const safeInit = (name, init) => { try { init(); } catch (error) { console.error("[Ryan's Salon] " + name + " initialization failed:", error); } };
+
+  safeInit("mobile navigation", () => {
+    const nav = one(".nav-wrap"), toggle = one(".menu-toggle");
+    if (!nav || !toggle) return;
+    const close = () => { nav.classList.remove("menu-open"); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", "Open navigation menu"); };
+    const open = () => { nav.classList.add("menu-open"); toggle.setAttribute("aria-expanded", "true"); toggle.setAttribute("aria-label", "Close navigation menu"); };
+    toggle.addEventListener("click", () => nav.classList.contains("menu-open") ? close() : open());
+    nav.addEventListener("click", event => {
+      const link = event.target.closest("a");
+      if (link && link.matches(".nav-links a")) close();
+    });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") close(); });
+    document.addEventListener("click", event => { if (!nav.contains(event.target)) close(); });
+    window.addEventListener("resize", () => { if (window.matchMedia("(min-width: 768px)").matches) close(); });
+  });
+
+  safeInit("booking and contact links", () => {
+    const bookingUrl = typeof cfg.bookingUrl === "string" ? cfg.bookingUrl.trim() : "";
+    const phoneDigits = String(cfg.phone || "6476182685").replace(/\D/g, "");
+    const tel = "tel:+" + phoneDigits;
+    all("[data-booking-link]").forEach(link => {
+      link.href = bookingUrl || tel;
+      if (bookingUrl) { link.textContent = "Book Now"; link.target = "_blank"; link.rel = "noopener"; }
+      else { link.textContent = "Call to Book"; link.removeAttribute("target"); link.removeAttribute("rel"); }
+    });
+    const note = one("#booking-note"); if (note) note.hidden = Boolean(bookingUrl);
+    const call = one("#call-button"); if (call) { call.href = tel; call.hidden = !phoneDigits; }
+    all(".mobile-cta a:first-child").forEach(link => { link.href = tel; link.hidden = !phoneDigits; });
+  });
+
+  safeInit("smooth navigation", () => {
+    all('a[href^="#"]').forEach(link => link.addEventListener("click", event => {
+      const target = one(link.getAttribute("href"));
+      if (!target) return;
+      event.preventDefault();
+      target.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      if (history.replaceState) history.replaceState(null, "", link.getAttribute("href"));
+    }));
+  });
+
+  safeInit("review expansion", () => {
+    all(".review-card").forEach(card => {
+      const text = one(".review-text", card), button = one(".review-expand", card);
+      if (!text || !button) return;
+      text.classList.add("clamped");
+      requestAnimationFrame(() => {
+        if (text.scrollHeight > text.clientHeight + 2) button.hidden = false;
+      });
+      button.addEventListener("click", () => {
+        const expanded = text.classList.toggle("expanded");
+        button.textContent = expanded ? "Read less" : "Read more";
+        button.setAttribute("aria-expanded", String(expanded));
+      });
+    });
+  });
+
+  safeInit("service filters", () => {
+    const tabs = all(".service-tab"), groups = all(".service-group");
+    if (!tabs.length || !groups.length) return;
+    const select = tab => {
+      const index = Number(tab.dataset.category);
+      groups.forEach((group, i) => { group.hidden = i !== index; });
+      tabs.forEach(item => { const active = item === tab; item.classList.toggle("active", active); item.setAttribute("aria-selected", String(active)); });
+    };
+    tabs.forEach(tab => tab.addEventListener("click", () => select(tab)));
+    select(tabs.find(tab => tab.getAttribute("aria-selected") === "true") || tabs[0]);
+  });
+
+  safeInit("gallery filters and lightbox", () => {
+    const gallery = one(".gallery-grid"), lightbox = one("#lightbox");
+    const image = one("#lightbox-image"), caption = one("#lightbox-caption");
+    if (!gallery) return;
+    let currentCard = null, touchStartX = null;
+    const cards = () => all(".gallery-card", gallery);
+    const visibleCards = () => cards().filter(card => !card.hidden);
+    const close = () => { if (!lightbox) return; lightbox.classList.remove("open"); lightbox.setAttribute("aria-hidden", "true"); };
+    const show = card => {
+      if (!card || !image || !lightbox) return;
+      currentCard = card;
+      const src = card.dataset.photo || "", alt = card.dataset.alt || "Salon hair or beauty service";
+      image.style.display = "block"; image.parentElement.classList.remove("fallback-tile");
+      image.onerror = () => { image.style.display = "none"; image.parentElement.classList.add("fallback-tile"); };
+      image.src = src; image.alt = alt;
+      const ash = src.includes("ash-blonde-balayage");
+      image.style.aspectRatio = ash ? "1 / 1" : "3 / 4";
+      image.style.objectFit = ash ? "cover" : "contain";
+      image.style.objectPosition = ash ? "top" : "center";
+      if (caption) caption.textContent = card.dataset.gallery || alt;
+      lightbox.classList.add("open"); lightbox.setAttribute("aria-hidden", "false");
+    };
+    const move = step => {
+      const visible = visibleCards(); if (!visible.length) return;
+      let index = visible.indexOf(currentCard); if (index < 0) index = 0;
+      show(visible[(index + step + visible.length) % visible.length]);
+    };
+    gallery.addEventListener("click", event => {
+      const card = event.target.closest(".gallery-card");
+      if (card && gallery.contains(card) && !card.hidden) show(card);
+    });
+    all(".gallery-filter").forEach(button => button.addEventListener("click", () => {
+      const filter = button.dataset.filter;
+      all(".gallery-filter").forEach(item => { const active = item === button; item.classList.toggle("active", active); item.setAttribute("aria-pressed", String(active)); });
+      cards().forEach(card => { card.hidden = card.dataset.category !== filter; });
+      close();
+    }));
+    const closeButton = one(".lightbox-close", lightbox), previous = one(".lightbox-prev", lightbox), next = one(".lightbox-next", lightbox);
+    if (closeButton) closeButton.addEventListener("click", close);
+    if (previous) previous.addEventListener("click", () => move(-1));
+    if (next) next.addEventListener("click", () => move(1));
+    if (lightbox) {
+      lightbox.addEventListener("click", event => { if (event.target === lightbox) close(); });
+      lightbox.addEventListener("touchstart", event => { touchStartX = event.changedTouches[0]?.clientX ?? null; }, { passive: true });
+      lightbox.addEventListener("touchend", event => {
+        if (touchStartX === null) return;
+        const dx = event.changedTouches[0].clientX - touchStartX; touchStartX = null;
+        if (Math.abs(dx) > 45) move(dx < 0 ? 1 : -1);
+      }, { passive: true });
+    }
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") close();
+      if (!lightbox?.classList.contains("open")) return;
+      if (event.key === "ArrowLeft") move(-1);
+      if (event.key === "ArrowRight") move(1);
+    });
+    const colour = one('.gallery-filter[data-filter="colour"]');
+    if (colour) colour.click();
+  });
+
+  safeInit("local-time opening status", () => {
+    const year = one("#year"); if (year) year.textContent = String(new Date().getFullYear());
+    const status = one("#open-status"); if (!status) return;
+    const hours = Array.isArray(cfg.hours) ? cfg.hours : [];
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat("en-CA", { timeZone: cfg.timezone || "America/Toronto", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(now);
+    const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+    const dayMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    const day = dayMap[values.weekday], minutes = Number(values.hour) * 60 + Number(values.minute);
+    const today = hours.find(item => Array.isArray(item.dayIndexes) && item.dayIndexes.includes(day));
+    const parse = time => { const [h, m] = String(time || "").split(":").map(Number); return (h || 0) * 60 + (m || 0); };
+    status.textContent = today && minutes >= parse(today.open) && minutes < parse(today.close) ? "Open now" : "Closed now";
+    status.setAttribute("aria-label", status.textContent + ", local salon time");
+  });
+
+  safeInit("hero motion", () => {
+    const hero = one(".hero"), heroImage = one(".hero-bg");
+    if (!hero || !heroImage || window.matchMedia("(prefers-reduced-motion: reduce)").matches || window.matchMedia("(max-width: 767px)").matches) return;
+    hero.addEventListener("pointermove", event => {
+      const rect = hero.getBoundingClientRect(), x = (event.clientX - rect.left) / rect.width - .5, y = (event.clientY - rect.top) / rect.height - .5;
+      heroImage.style.transform = `scale(1.04) translate3d(${-x * 8}px,${-y * 6}px,0)`;
+    });
+    hero.addEventListener("pointerleave", () => { heroImage.style.transform = "scale(1.025)"; });
+  });
+})();
