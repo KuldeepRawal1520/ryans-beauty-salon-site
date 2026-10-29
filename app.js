@@ -23,42 +23,54 @@
     const gallery = one(".hero-gallery"); if (!gallery) return;
     const cards = all(".hero-photo-card", gallery), dots = all("[data-hero-dot]", gallery);
     if (!cards.length) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let active = 0, timer = 0, touchedAt = 0, pointerStart = null;
-    const mobile = () => window.matchMedia("(max-width: 767px)").matches;
-    const apply = () => {
-      cards.forEach((card,i) => {
-        const rel = (i-active+cards.length)%cards.length;
+    const mobileQuery = window.matchMedia("(max-width: 767px)");
+    const reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobile = () => mobileQuery.matches;
+    let active=0,timer=0,pauseUntil=0,drag=null,raf=0,visible=true;
+    let hintsSeen=false; try { hintsSeen=sessionStorage.getItem("ryanSalonMobileSwipeSeen")==="1"; } catch (_) {}
+    if(hintsSeen) gallery.classList.add("hints-hidden");
+    const wrap=n=>(n%cards.length+cards.length)%cards.length;
+    const signedOffset=i=>{let d=wrap(i-active);if(d>cards.length/2)d-=cards.length;return d;};
+    const apply=(dragPx=0,live=false)=>{
+      cards.forEach((card,i)=>{
+        const d=signedOffset(i),ad=Math.abs(d),dragProgress=live?dragPx/Math.max(1,gallery.clientWidth):0;
+        const effective=d-dragProgress,ae=Math.abs(effective);
+        const x=effective*58, z=-ae*90, ry=reducedQuery.matches?0:effective*-38, scale=1-ae*.1;
         card.classList.toggle("is-active",i===active);
-        if(mobile()) {
-          const offsets=[0,1,-1,2,-2]; const pos=offsets.indexOf(rel);
-          const x=pos===0?0:pos===1?56:pos===2?-56:pos===3?100:-100;
-          const scale=pos===0?1:pos===1||pos===2?.82:.68;
-          const rot=pos===0?0:pos===1?12:pos===2?-12:pos===3?22:-22;
-          card.style.setProperty("--tx",x+"%");card.style.setProperty("--cs",scale);card.style.setProperty("--rz",rot+"deg");
-          card.style.opacity=pos<3?"1":".72";card.style.zIndex=String(8-pos);
-        } else {
-          const positions=[{x:-68,z:45,s:1,r:-7},{x:138,z:-100,s:.78,r:9},{x:92,z:-35,s:.87,r:-2},{x:-126,z:-95,s:.76,r:4},{x:25,z:-145,s:.7,r:3}];
-          const p=positions[i];card.style.setProperty("--tx",p.x+"px");card.style.setProperty("--tz",p.z+"px");card.style.setProperty("--cs",p.s);card.style.setProperty("--rz",p.r+"deg");card.style.opacity="1";
-        }
+        card.style.setProperty("--slot-x",x+"%");
+        card.style.setProperty("--slot-z",z+"px");
+        card.style.setProperty("--slot-ry",ry+"deg");
+        card.style.setProperty("--slot-scale",String(scale));
+        card.style.setProperty("--drag-x","0px");
+        card.style.opacity=ad===0?"1":ad===1?".85":ad===2?".5":"0";
+        card.style.visibility=ad>2?"hidden":"visible";
+        card.style.zIndex=String(20-ad);
+        card.style.willChange=(ad===0||(live&&ad===1))?"transform, opacity":"auto";
+        if(reducedQuery.matches){card.style.setProperty("--slot-x",d===0?"0%":"0%");card.style.setProperty("--slot-z","0px");card.style.setProperty("--slot-ry","0deg");card.style.opacity=d===0?"1":"0";card.style.visibility=d===0?"visible":"hidden";}
       });
-      dots.forEach((dot,i)=>dot.classList.toggle("active",i===active));
+      dots.forEach((dot,i)=>{dot.classList.toggle("active",i===active);dot.setAttribute("aria-current",i===active?"true":"false");});
     };
-    const advance=()=>{if(Date.now()-touchedAt<6000)return;active=(active+1)%cards.length;apply();};
-    const start=()=>{if(timer)clearInterval(timer);if(!reduced)timer=setInterval(advance,mobile()?3000:3500);};
-    dots.forEach(dot=>dot.addEventListener("click",()=>{active=Number(dot.dataset.heroDot)||0;touchedAt=Date.now();apply();}));
-    gallery.addEventListener("touchstart",e=>{pointerStart=e.changedTouches[0]?.clientX??null;touchedAt=Date.now();},{passive:true});
-    gallery.addEventListener("touchend",e=>{if(pointerStart===null)return;const dx=e.changedTouches[0].clientX-pointerStart;pointerStart=null;if(Math.abs(dx)>35){active=(active+(dx<0?1:cards.length-1))%cards.length;apply();}touchedAt=Date.now();},{passive:true});
-    gallery.addEventListener("mouseenter",()=>{if(timer)clearInterval(timer);});
-    gallery.addEventListener("mouseleave",start);
-    window.addEventListener("resize",apply);
+    const pause=()=>{pauseUntil=Date.now()+8000;};
+    const advance=step=>{active=wrap(active+step);apply();};
+    const stop=()=>{if(timer){clearInterval(timer);timer=0;}};
+    const start=()=>{stop();if(!mobile()||reducedQuery.matches)return;timer=setInterval(()=>{if(visible&&Date.now()>=pauseUntil)advance(1);},3200);};
+    const hideHints=()=>{gallery.classList.add("hints-hidden");try{sessionStorage.setItem("ryanSalonMobileSwipeSeen","1");}catch(_){}};
+    dots.forEach(dot=>dot.addEventListener("click",()=>{pause();active=wrap(Number(dot.dataset.heroDot)||0);apply();}));
+    const prev=one(".mobile-carousel-prev",gallery),next=one(".mobile-carousel-next",gallery);
+    if(prev)prev.addEventListener("click",()=>{pause();advance(-1);});
+    if(next)next.addEventListener("click",()=>{pause();advance(1);});
+    gallery.addEventListener("pointerdown",e=>{if(!mobile()||e.button!==0)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastT:performance.now(),velocity:0,moved:false};pause();try{gallery.setPointerCapture(e.pointerId);}catch(_){};});
+    gallery.addEventListener("pointermove",e=>{if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.abs(dx)<6&&Math.abs(dy)>Math.abs(dx))return;if(Math.abs(dx)>5)drag.moved=true;const now=performance.now(),dt=Math.max(1,now-drag.lastT);drag.velocity=(e.clientX-drag.lastX)/dt;drag.lastX=e.clientX;drag.lastT=now;if(!drag.moved||reducedQuery.matches)return;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;apply(dx,true);});});
+    const finish=e=>{if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,velocity=drag.velocity,wasDrag=drag.moved;drag=null;if(wasDrag){hideHints();if(!reducedQuery.matches){let step=Math.round(-dx/Math.max(1,gallery.clientWidth*.58));if(Math.abs(velocity)>.45)step=velocity<0?Math.max(1,step):Math.min(-1,step);if(step===0&&Math.abs(dx)>30)step=dx<0?1:-1;if(step)advance(step);}else{active=wrap(active+(dx<0?1:dx>0?-1:0));apply();}}else{const card=e.target.closest(".hero-photo-card");if(card){const idx=Number(card.dataset.heroCard);if(Number.isFinite(idx)&&idx!==active){active=wrap(idx);apply();}}}apply();};
+    gallery.addEventListener("pointerup",finish);gallery.addEventListener("pointercancel",finish);
+    gallery.addEventListener("click",e=>{if(drag)return;const card=e.target.closest(".hero-photo-card");if(card&&Number(card.dataset.heroCard)!==active){pause();active=wrap(Number(card.dataset.heroCard));apply();}});
+    if("IntersectionObserver" in window){const observer=new IntersectionObserver(entries=>{visible=Boolean(entries[0]&&entries[0].isIntersecting);});observer.observe(gallery);}
+    else visible=true;
+    window.addEventListener("resize",()=>{apply();start();});
+    if(reducedQuery.addEventListener)reducedQuery.addEventListener("change",()=>{apply();start();});
     apply();start();
-    if(window.matchMedia("(hover:hover) and (pointer:fine) and (min-width:768px)").matches&&!reduced){
-      gallery.addEventListener("pointermove",e=>{const r=gallery.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;gallery.style.transform="rotateY("+(-x*8)+"deg) rotateX("+(y*5)+"deg)";});
-      gallery.addEventListener("pointerleave",()=>{gallery.style.transform="";});
-    }
   });
-  safeInit("rotating hero reviews", () => {
+    safeInit("rotating hero reviews", () => {
     const line=one(".hero-review-line");if(!line)return;
     const items=[
       {quote:"The color turned out exactly how I imagined, I love it so much.",name:"Mary Joy R."},
