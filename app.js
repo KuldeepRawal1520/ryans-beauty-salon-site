@@ -293,7 +293,7 @@
 
 
   safeInit("location tabs and deferred map", () => {
-    const tabs=all("[data-location-tab]"),panels=all("[data-location-panel]");
+    const tabs=all("[data-location-tab]"),panels=all("[data-location-panel]");document.body.classList.add("locations-ready");
     const select=id=>{tabs.forEach(tab=>{const active=tab.dataset.locationTab===id;tab.classList.toggle("active",active);tab.setAttribute("aria-selected",String(active));});panels.forEach(panel=>{const active=panel.dataset.locationPanel===id;panel.hidden=!active;panel.classList.toggle("active",active);if(active){const frame=one("iframe[data-src]",panel);if(frame&&!frame.getAttribute("src"))frame.setAttribute("src",frame.dataset.src);}});};
     tabs.forEach(tab=>tab.addEventListener("click",()=>select(tab.dataset.locationTab)));
     if(window.matchMedia("(min-width:768px)").matches){panels.forEach(panel=>{panel.hidden=false;const frame=one("iframe[data-src]",panel);if(frame&&!frame.getAttribute("src"))frame.setAttribute("src",frame.dataset.src);});}else select("albion");
