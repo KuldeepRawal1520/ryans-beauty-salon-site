@@ -330,6 +330,25 @@
       card.addEventListener("pointerleave",()=>{card.style.setProperty("--card-tilt-x","0deg");card.style.setProperty("--card-tilt-y","0deg");card.style.setProperty("--sheen-shift","-100%");});
     });
   });
+  safeInit("barber booking phone configuration", () => {
+    try {
+      const config = window.SALON_CONFIG;
+      if (!config || !Array.isArray(config.barbers) || !Array.isArray(config.locations)) return;
+      const woodbridge = config.locations.find(location => location && location.id === "woodbridge");
+      if (!woodbridge || !woodbridge.tel) return;
+      all("[data-barber-call]").forEach(button => {
+        if (!button) return;
+        const index = Number(button.getAttribute("data-barber-call"));
+        const barber = config.barbers[index];
+        if (barber && barber.tel) button.setAttribute("href", "tel:" + barber.tel.replace(/^tel:/, ""));
+      });
+      const closingCall = one("[data-woodbridge-call]");
+      if (closingCall) closingCall.setAttribute("href", "tel:" + woodbridge.tel.replace(/^tel:/, ""));
+    } catch (error) {
+      console.error("[Ryan's Salon] barber booking links could not be enhanced:", error);
+    }
+  });
+
   safeInit("desktop side ornaments", () => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(pointer:fine) and (min-width:1200px)").matches) return;
     const freeMargin=(window.innerWidth-1160)/2;if(freeMargin<120)return;
