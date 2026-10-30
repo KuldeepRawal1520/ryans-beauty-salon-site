@@ -357,7 +357,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .side-ornaments .ornament.right-one{right:calc(50% - 580px - 82px);top:36vh}
 .side-ornaments .ornament.right-two{right:calc(50% - 580px - 62px);top:78vh}
 @media(pointer:fine) and (min-width:1200px){.side-ornaments{display:block}}
-@media(max-width:1439px){.side-ornaments{display:none}}
+@media(max-width:1399px){.side-ornaments{display:none}}
 @media(prefers-reduced-motion:reduce){.side-ornaments{display:none!important}}
 
 /* Keep the card sheen motion transform-only */
