@@ -110,7 +110,7 @@
 
   safeInit("booking and contact links", () => {
     const bookingUrl = typeof cfg.bookingUrl === "string" ? cfg.bookingUrl.trim() : "";
-    const phoneDigits = String(cfg.phone || "6476182685").replace(/\D/g, "");
+    const phoneDigits = String(cfg.phone || "4167411721").replace(/\D/g, "");
     const tel = "tel:+" + (phoneDigits.length === 10 ? "1" + phoneDigits : phoneDigits);
     all("[data-booking-link]").forEach(link => {
       link.href = bookingUrl || tel;
@@ -125,7 +125,7 @@
         if (link.matches(".hero-primary-cta")) {
           const mobileLabel = one(".hero-call-mobile-label", link), desktopLabel = one(".hero-call-desktop-label", link);
           if (mobileLabel) mobileLabel.textContent = "Call to Book";
-          if (desktopLabel) { const icon = one("svg", desktopLabel); desktopLabel.replaceChildren(...(icon ? [icon, document.createTextNode("Call (647) 618-2685")] : [document.createTextNode("Call (647) 618-2685")])); }
+          if (desktopLabel) { const icon = one("svg", desktopLabel); desktopLabel.replaceChildren(...(icon ? [icon, document.createTextNode("Call (416) 741-1721")] : [document.createTextNode("Call (416) 741-1721")])); }
         } else link.textContent = "Call to Book";
         link.removeAttribute("target"); link.removeAttribute("rel");
       }
@@ -289,6 +289,21 @@
       }
     }catch(error){console.error("[Ryan's Salon] desktop pointer motion failed:",error);}
     try{let raf=0;const onScroll=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const r=hero.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight){const y=window.scrollY*.12;tilt.style.transform="rotateY(-14deg) rotateZ(5deg) scale(1.08) translate3d(var(--wall-x,0px),calc(var(--wall-y,0px) + "+y+"px),0)";}});};window.addEventListener("scroll",onScroll,{passive:true});}catch(error){console.error("[Ryan's Salon] desktop scroll parallax failed:",error);}
+  });
+
+
+  safeInit("location tabs and deferred map", () => {
+    const tabs=all("[data-location-tab]"),panels=all("[data-location-panel]");
+    const select=id=>{tabs.forEach(tab=>{const active=tab.dataset.locationTab===id;tab.classList.toggle("active",active);tab.setAttribute("aria-selected",String(active));});panels.forEach(panel=>{const active=panel.dataset.locationPanel===id;panel.hidden=!active;panel.classList.toggle("active",active);if(active){const frame=one("iframe[data-src]",panel);if(frame&&!frame.getAttribute("src"))frame.setAttribute("src",frame.dataset.src);}});};
+    tabs.forEach(tab=>tab.addEventListener("click",()=>select(tab.dataset.locationTab)));
+    if(window.matchMedia("(min-width:768px)").matches){panels.forEach(panel=>{panel.hidden=false;const frame=one("iframe[data-src]",panel);if(frame&&!frame.getAttribute("src"))frame.setAttribute("src",frame.dataset.src);});}else select("albion");
+  });
+  safeInit("owner portrait motion", () => {
+    const panel=one(".owner-photo-panel"),portrait=one(".owner-photo-panel img");
+    if(!panel||!portrait)return;
+    if(window.matchMedia("(prefers-reduced-motion:reduce)").matches){panel.classList.add("is-visible");return;}
+    try{if("IntersectionObserver" in window){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){panel.classList.add("is-visible");observer.disconnect();}}),{threshold:.18});observer.observe(panel);}else panel.classList.add("is-visible");}catch(error){panel.classList.add("is-visible");console.error("[Ryan's Salon] owner reveal failed:",error);}
+    try{if(window.matchMedia("(pointer:fine)").matches){panel.addEventListener("pointermove",event=>{const r=panel.getBoundingClientRect(),x=(event.clientX-r.left)/r.width-.5,y=(event.clientY-r.top)/r.height-.5;panel.style.setProperty("--tilt-x",(-y*6)+"deg");panel.style.setProperty("--tilt-y",(x*6)+"deg");portrait.style.transform="translate3d("+(-x*5)+"px,"+(-y*4)+"px,0)";});panel.addEventListener("pointerleave",()=>{panel.style.setProperty("--tilt-x","0deg");panel.style.setProperty("--tilt-y","0deg");portrait.style.transform="translate3d(0,0,0)";});}}catch(error){console.error("[Ryan's Salon] owner pointer motion failed:",error);}
   });
 
 })();
