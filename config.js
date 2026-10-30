@@ -20,6 +20,19 @@ window.SALON_CONFIG = {
     { name: "Marvin Toma", firstName: "Marvin", instagram: "https://instagram.com/__marvintoma", photo: "/barber-marvin-toma.jpg", width: 900, height: 1125, objectPosition: "50% 28%", tel: "+19052651721" },
     { name: "Issa Algresh", firstName: "Issa", instagram: "https://instagram.com/Issa.algresh", photo: "/barber-issa-algresh.jpg", width: 900, height: 1125, objectPosition: "50% 22%", tel: "+19052651721" }
   ],
+  gallery: [
+    { file: "/images/barber-work-02-curly-taper-fade.jpg", width: 640, height: 641, objectPosition: "45% 30%", alt: "Curly taper fade" },
+    { file: "/images/barber-work-05-bw-skin-fade-profile.jpg", width: 640, height: 853, objectPosition: "55% 35%", alt: "Black and white skin fade profile" },
+    { file: "/images/barber-work-06-pompadour-hard-part-fade.jpg", width: 640, height: 640, objectPosition: "40% 40%", alt: "Pompadour hard part fade" },
+    { file: "/images/barber-work-01-skin-fade-beard-side.jpg", width: 640, height: 666, objectPosition: "40% 30%", alt: "Skin fade with beard" },
+    { file: "/images/barber-work-04-pompadour-fade-beard.jpg", width: 640, height: 641, objectPosition: "55% 30%", alt: "Pompadour fade with beard" },
+    { file: "/images/barber-work-08-curly-top-fade-beard.jpg", width: 640, height: 641, objectPosition: "60% 35%", alt: "Curly top fade with beard" },
+    { file: "/images/barber-work-03-high-skin-fade-beard.jpg", width: 640, height: 640, objectPosition: "40% 35%", alt: "High skin fade with beard" },
+    { file: "/images/barber-work-11-textured-crop-fade.jpg", width: 640, height: 640, objectPosition: "45% 40%", alt: "Textured crop fade" },
+    { file: "/images/barber-work-09-skin-fade-beard-chain.jpg", width: 640, height: 640, objectPosition: "35% 40%", alt: "Skin fade with beard" },
+    { file: "/images/barber-work-07-top-bun-fade-design.jpg", width: 640, height: 641, objectPosition: "45% 55%", alt: "Top bun fade design" },
+    { file: "/images/barber-work-10-top-bun-fade-part.jpg", width: 640, height: 641, objectPosition: "40% 55%", alt: "Top bun fade with part" }
+  ],
   socials: { instagram: "", facebook: "" }
 };
 // TODO confirm Woodbridge opening hours and exact business name

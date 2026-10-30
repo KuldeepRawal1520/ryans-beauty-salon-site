@@ -369,3 +369,30 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .side-ornaments .ornament:nth-child(2){animation-duration:23s;animation-delay:-8s}
 .side-ornaments .ornament:nth-child(3){animation-duration:21s;animation-delay:-4s}
 .side-ornaments .ornament:nth-child(4){animation-duration:26s;animation-delay:-13s}
+
+
+/* Our Work gallery: isolated from the existing barber cards and other page sections */
+.barber-work-section{margin-top:34px}
+.barber-work-heading{margin:0 0 18px}
+.barber-work-heading h2{font:700 clamp(27px,3.2vw,38px)/1.12 var(--head);letter-spacing:-.04em;color:#fff;margin:0 0 7px}
+.barber-work-heading p{color:var(--dim);font-size:14px;margin:0}
+.barber-work-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.barber-work-tile{position:relative;display:block;width:100%;min-width:0;min-height:48px;padding:0;overflow:hidden;aspect-ratio:1/1;border:1px solid rgba(201,206,214,.72);border-radius:14px;background:var(--panel);cursor:pointer;transform-style:preserve-3d;transition:transform .24s ease,opacity .55s ease}
+.barber-work-tile img{display:block;width:100%;height:100%;aspect-ratio:1/1;object-fit:cover;object-position:var(--work-position,50% 35%)}
+.barber-work-tile:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.075;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+@media(min-width:768px) and (max-width:1099px){.barber-work-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
+@media(max-width:767px){.barber-work-section{margin-top:28px}.barber-work-heading{margin-bottom:14px}.barber-work-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.barber-work-tile{border-radius:14px}}
+@media(hover:hover) and (pointer:fine) and (min-width:1200px){.barber-work-tile{transform:perspective(900px) rotateX(var(--card-tilt-x,0deg)) rotateY(var(--card-tilt-y,0deg))}.barber-work-tile:before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .2s ease;background:linear-gradient(105deg,transparent 20%,rgba(255,255,255,.14) 50%,transparent 80%);transform:translateX(var(--sheen-shift,-100%)) skewX(-18deg)}.barber-work-tile:hover:before{opacity:1}}
+.barber-work-lightbox[hidden]{display:none!important}
+.barber-work-lightbox{position:fixed;inset:0;z-index:1000;display:grid;grid-template-columns:64px minmax(0,1fr) 64px;grid-template-rows:56px minmax(0,1fr) 36px;align-items:center;justify-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 12px) calc(env(safe-area-inset-right) + 12px) calc(env(safe-area-inset-bottom) + 12px) calc(env(safe-area-inset-left) + 12px);min-height:100svh;background:rgba(10,11,13,.97);opacity:0;transition:opacity .2s ease}
+.barber-work-lightbox.is-open{opacity:1}
+.barber-work-lightbox-image{grid-column:2;grid-row:2;display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;min-width:0;min-height:0}
+.barber-work-lightbox button{display:grid;place-items:center;width:48px;height:48px;min-width:48px;min-height:48px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:#fff}
+.barber-work-lightbox button:disabled{opacity:.4}
+.barber-work-lightbox button svg{width:24px;height:24px}
+.barber-work-close{grid-column:3;grid-row:1;justify-self:end}
+.barber-work-previous{grid-column:1;grid-row:2}
+.barber-work-next{grid-column:3;grid-row:2}
+.barber-work-counter{grid-column:2;grid-row:3;margin:0;color:var(--silver);font-size:12px}
+@media(max-width:767px){.barber-work-lightbox{grid-template-columns:48px minmax(0,1fr) 48px;grid-template-rows:52px minmax(0,1fr) 32px;gap:4px;padding:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) calc(env(safe-area-inset-bottom) + 8px) calc(env(safe-area-inset-left) + 8px)}.barber-work-lightbox-image{grid-column:1/4;grid-row:2;max-width:100%;max-height:100%}.barber-work-previous{grid-column:1;grid-row:2;align-self:center;justify-self:start;z-index:2}.barber-work-next{grid-column:3;grid-row:2;align-self:center;justify-self:end;z-index:2}.barber-work-close{grid-column:3;grid-row:1;z-index:2}.barber-work-counter{grid-column:2;grid-row:3}}
+@media(prefers-reduced-motion:reduce){.barber-work-tile{transition:none}.barber-work-lightbox{transition:opacity .2s ease}.barber-work-tile:before{display:none}}

@@ -309,7 +309,7 @@
 
   safeInit("progressive scroll reveal", () => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const targets = all(".barbers-page .barbers-heading,.barbers-page .barber-card,.barbers-page .barber-closing,.section-heading,.service,.review-card");
+    const targets = all(".barbers-page .barbers-heading,.barbers-page .barber-card,.barbers-page .barber-closing,.barber-work-heading,.barber-work-tile,.section-heading,.service,.review-card");
     if (!targets.length) return;
     if (!("IntersectionObserver" in window)) return;
     const observer = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -319,7 +319,7 @@
   });
   safeInit("desktop card tilt", () => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(pointer:fine) and (min-width:1200px)").matches) return;
-    const cards = all(".barber-card,.service,.review-card");
+    const cards = all(".barber-card,.barber-work-tile,.service,.review-card");
     cards.forEach(card => {
       if (!card) return;
       card.addEventListener("pointermove", event => {
@@ -346,6 +346,116 @@
       if (closingCall) closingCall.setAttribute("href", "tel:" + woodbridge.tel.replace(/^tel:/, ""));
     } catch (error) {
       console.error("[Ryan's Salon] barber booking links could not be enhanced:", error);
+    }
+  });
+
+
+  safeInit("barber work lightbox", () => {
+    try {
+      const grid = one(".barber-work-grid");
+      if (!grid) return;
+      const tiles = all(".barber-work-tile", grid);
+      if (!tiles.length) return;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const makeButton = (className, label, pathData) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        button.setAttribute("aria-label", label);
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("focusable", "false");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "currentColor");
+        path.setAttribute("stroke-width", "1.8");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        svg.appendChild(path);
+        button.appendChild(svg);
+        return button;
+      };
+      const overlay = document.createElement("div");
+      overlay.className = "barber-work-lightbox";
+      overlay.hidden = true;
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
+      overlay.setAttribute("aria-label", "Our work photo gallery");
+      const close = makeButton("barber-work-close", "Close photo", "M6 6l12 12M18 6L6 18");
+      const previous = makeButton("barber-work-previous", "Previous photo", "M15 18l-6-6 6-6");
+      const next = makeButton("barber-work-next", "Next photo", "M9 18l6-6-6-6");
+      const image = document.createElement("img");
+      image.className = "barber-work-lightbox-image";
+      image.alt = "";
+      image.draggable = false;
+      const counter = document.createElement("p");
+      counter.className = "barber-work-counter";
+      counter.setAttribute("aria-live", "polite");
+      overlay.append(close, previous, image, next, counter);
+      document.body.appendChild(overlay);
+      let activeIndex = 0;
+      let returnFocus = null;
+      let previousOverflow = "";
+      let pointerStart = null;
+      const show = index => {
+        activeIndex = (index + tiles.length) % tiles.length;
+        const source = tiles[activeIndex].querySelector("img");
+        if (!source) return;
+        image.src = source.currentSrc || source.src;
+        image.alt = source.alt || "Haircut";
+        counter.textContent = (activeIndex + 1) + " / " + tiles.length;
+        previous.disabled = tiles.length < 2;
+        next.disabled = tiles.length < 2;
+      };
+      const open = index => {
+        returnFocus = tiles[index];
+        previousOverflow = document.body.style.overflow;
+        show(index);
+        overlay.hidden = false;
+        document.body.style.overflow = "hidden";
+        if (reducedMotion) overlay.classList.add("is-open");
+        else requestAnimationFrame(() => overlay.classList.add("is-open"));
+        close.focus();
+      };
+      const shut = () => {
+        overlay.classList.remove("is-open");
+        overlay.hidden = true;
+        document.body.style.overflow = previousOverflow;
+        if (returnFocus && typeof returnFocus.focus === "function") returnFocus.focus();
+      };
+      const step = direction => show(activeIndex + direction);
+      tiles.forEach((tile, index) => {
+        if (!tile) return;
+        tile.addEventListener("click", () => open(index));
+      });
+      close.addEventListener("click", shut);
+      previous.addEventListener("click", () => step(-1));
+      next.addEventListener("click", () => step(1));
+      overlay.addEventListener("click", event => { if (event.target === overlay) shut(); });
+      document.addEventListener("keydown", event => {
+        if (overlay.hidden) return;
+        if (event.key === "Escape") { event.preventDefault(); shut(); }
+        else if (event.key === "ArrowLeft") { event.preventDefault(); step(-1); }
+        else if (event.key === "ArrowRight") { event.preventDefault(); step(1); }
+        else if (event.key === "Tab") {
+          const focusable = [close, previous, next].filter(button => !button.disabled);
+          const first = focusable[0], last = focusable[focusable.length - 1];
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }
+      });
+      overlay.addEventListener("pointerdown", event => { pointerStart = event.clientX; }, { passive: true });
+      overlay.addEventListener("pointerup", event => {
+        if (pointerStart === null) return;
+        const delta = event.clientX - pointerStart;
+        pointerStart = null;
+        if (Math.abs(delta) > 45) step(delta < 0 ? 1 : -1);
+      }, { passive: true });
+      overlay.addEventListener("pointercancel", () => { pointerStart = null; });
+    } catch (error) {
+      console.error("[Ryan's Salon] barber work lightbox initialization failed:", error);
     }
   });
 
