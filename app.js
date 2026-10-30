@@ -325,9 +325,9 @@
       card.addEventListener("pointermove", event => {
         const r=card.getBoundingClientRect(),x=(event.clientX-r.left)/Math.max(1,r.width)-.5,y=(event.clientY-r.top)/Math.max(1,r.height)-.5;
         card.style.setProperty("--card-tilt-x",(-y*8)+"deg");card.style.setProperty("--card-tilt-y",(x*8)+"deg");
-        card.style.setProperty("--sheen-x",((x+.5)*100)+"%");card.style.setProperty("--sheen-y",((y+.5)*100)+"%");
+        card.style.setProperty("--sheen-shift",(((x+.5)*200)-100)+"%");
       },{passive:true});
-      card.addEventListener("pointerleave",()=>{card.style.setProperty("--card-tilt-x","0deg");card.style.setProperty("--card-tilt-y","0deg");card.style.setProperty("--sheen-x","50%");card.style.setProperty("--sheen-y","0%");});
+      card.addEventListener("pointerleave",()=>{card.style.setProperty("--card-tilt-x","0deg");card.style.setProperty("--card-tilt-y","0deg");card.style.setProperty("--sheen-shift","-100%");});
     });
   });
   safeInit("desktop side ornaments", () => {
@@ -337,7 +337,7 @@
     layer.innerHTML='<span class="ornament left-one"></span><span class="ornament left-two shard"></span><span class="ornament right-one shard"></span><span class="ornament right-two"></span>';
     document.body.appendChild(layer);
     const shapes=all(".ornament",layer);let raf=0;
-    const update=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const y=window.scrollY*.08;shapes.forEach((shape,i)=>{const direction=i%2? -1:1;shape.style.transform="translate3d(0,"+(y*direction)+"px,0) rotateX("+(20+i*9)+"deg) rotateY("+(35+i*13)+"deg) rotateZ("+(window.scrollY*.008+i*18)+"deg)";});});};
+    const update=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const y=window.scrollY*.08;shapes.forEach((shape,i)=>{const direction=i%2? -1:1;shape.style.setProperty("--parallax-y",(y*direction)+"px");});});};
     update();window.addEventListener("scroll",update,{passive:true});
   });
 
