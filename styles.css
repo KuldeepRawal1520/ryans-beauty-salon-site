@@ -310,3 +310,5 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .mobile-menu-brand{display:none}
 @media(max-width:767px){body.locations-ready .location-tabs{display:flex}.mobile-menu-brand{display:block;padding:10px 0 16px;border-bottom:1px solid var(--line);margin-bottom:8px}.mobile-menu-brand img{display:block;width:154px;height:46px;object-fit:contain;object-position:left center}}
+
+@media(max-width:767px){body:not(.locations-ready) .location-tabs{display:none!important}}
