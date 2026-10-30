@@ -359,3 +359,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media(pointer:fine) and (min-width:1200px){.side-ornaments{display:block}}
 @media(max-width:1439px){.side-ornaments{display:none}}
 @media(prefers-reduced-motion:reduce){.side-ornaments{display:none!important}}
+
+/* Keep the card sheen motion transform-only */
+@media(hover:hover) and (pointer:fine) and (min-width:1200px){
+ .barber-card:before,.service:after,.review-card:after{left:-35%;right:auto;width:55%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.13),transparent);transform:translateX(var(--sheen-shift,-100%)) skewX(-18deg)}
+}
+@keyframes ornament-drift{0%,100%{transform:translate3d(0,var(--parallax-y,0px),0) rotateX(20deg) rotateY(35deg) rotateZ(-12deg)}50%{transform:translate3d(0,calc(var(--parallax-y,0px) - 16px),0) rotateX(35deg) rotateY(52deg) rotateZ(12deg)}}
+.side-ornaments .ornament{animation:ornament-drift 18s ease-in-out infinite}
+.side-ornaments .ornament:nth-child(2){animation-duration:23s;animation-delay:-8s}
+.side-ornaments .ornament:nth-child(3){animation-duration:21s;animation-delay:-4s}
+.side-ornaments .ornament:nth-child(4){animation-duration:26s;animation-delay:-13s}
