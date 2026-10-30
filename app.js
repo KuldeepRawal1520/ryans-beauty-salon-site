@@ -8,6 +8,7 @@
 
   safeInit("neon intro", () => {
     const overlay = one(".neon-intro");
+    if (document.body.classList.contains("barbers-document")) { if (overlay) overlay.remove(); return; }
     if (!overlay || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { if (overlay) overlay.remove(); return; }
     let seen = false;
     try { seen = sessionStorage.getItem("ryanSalonNeonIntroSeen") === "1"; } catch (_) {}
@@ -304,6 +305,40 @@
     if(window.matchMedia("(prefers-reduced-motion:reduce)").matches){panel.classList.add("is-visible");return;}
     try{if("IntersectionObserver" in window){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){panel.classList.add("is-visible");observer.disconnect();}}),{threshold:.18});observer.observe(panel);}else panel.classList.add("is-visible");}catch(error){panel.classList.add("is-visible");console.error("[Ryan's Salon] owner reveal failed:",error);}
     try{if(window.matchMedia("(pointer:fine)").matches){panel.addEventListener("pointermove",event=>{const r=panel.getBoundingClientRect(),x=(event.clientX-r.left)/r.width-.5,y=(event.clientY-r.top)/r.height-.5;panel.style.setProperty("--tilt-x",(-y*6)+"deg");panel.style.setProperty("--tilt-y",(x*6)+"deg");portrait.style.transform="translate3d("+(-x*5)+"px,"+(-y*4)+"px,0)";});panel.addEventListener("pointerleave",()=>{panel.style.setProperty("--tilt-x","0deg");panel.style.setProperty("--tilt-y","0deg");portrait.style.transform="translate3d(0,0,0)";});}}catch(error){console.error("[Ryan's Salon] owner pointer motion failed:",error);}
+  });
+
+  safeInit("progressive scroll reveal", () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const targets = all(".barbers-page .barbers-heading,.barbers-page .barber-card,.barbers-page .barber-closing,.section-heading,.service,.review-card");
+    if (!targets.length) return;
+    if (!("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.remove("motion-pending"); entry.target.classList.add("motion-visible"); observer.unobserve(entry.target); }
+    }), { threshold: .12 });
+    targets.forEach(target => { target.classList.add("motion-reveal","motion-pending"); observer.observe(target); });
+  });
+  safeInit("desktop card tilt", () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(pointer:fine) and (min-width:1200px)").matches) return;
+    const cards = all(".barber-card,.service,.review-card");
+    cards.forEach(card => {
+      if (!card) return;
+      card.addEventListener("pointermove", event => {
+        const r=card.getBoundingClientRect(),x=(event.clientX-r.left)/Math.max(1,r.width)-.5,y=(event.clientY-r.top)/Math.max(1,r.height)-.5;
+        card.style.setProperty("--card-tilt-x",(-y*8)+"deg");card.style.setProperty("--card-tilt-y",(x*8)+"deg");
+        card.style.setProperty("--sheen-x",((x+.5)*100)+"%");card.style.setProperty("--sheen-y",((y+.5)*100)+"%");
+      },{passive:true});
+      card.addEventListener("pointerleave",()=>{card.style.setProperty("--card-tilt-x","0deg");card.style.setProperty("--card-tilt-y","0deg");card.style.setProperty("--sheen-x","50%");card.style.setProperty("--sheen-y","0%");});
+    });
+  });
+  safeInit("desktop side ornaments", () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(pointer:fine) and (min-width:1200px)").matches) return;
+    const freeMargin=(window.innerWidth-1160)/2;if(freeMargin<120)return;
+    const layer=document.createElement("div");layer.className="side-ornaments";layer.setAttribute("aria-hidden","true");
+    layer.innerHTML='<span class="ornament left-one"></span><span class="ornament left-two shard"></span><span class="ornament right-one shard"></span><span class="ornament right-two"></span>';
+    document.body.appendChild(layer);
+    const shapes=all(".ornament",layer);let raf=0;
+    const update=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const y=window.scrollY*.08;shapes.forEach((shape,i)=>{const direction=i%2? -1:1;shape.style.transform="translate3d(0,"+(y*direction)+"px,0) rotateX("+(20+i*9)+"deg) rotateY("+(35+i*13)+"deg) rotateZ("+(window.scrollY*.008+i*18)+"deg)";});});};
+    update();window.addEventListener("scroll",update,{passive:true});
   });
 
 })();
