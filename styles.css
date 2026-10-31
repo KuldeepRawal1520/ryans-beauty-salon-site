@@ -398,3 +398,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media(prefers-reduced-motion:reduce){.barber-work-tile{transition:none}.barber-work-lightbox{transition:opacity .2s ease}.barber-work-tile:before{display:none}}
 
 @media(hover:hover) and (pointer:fine) and (min-width:1200px){.barber-work-tile.motion-reveal.motion-visible{transform:perspective(900px) rotateX(var(--card-tilt-x,0deg)) rotateY(var(--card-tilt-y,0deg))}}
+
+/* Verified Men and Women service menu sizing */
+#services .service{min-height:48px;gap:8px;padding:12px 0}
+#services .service>div{min-width:0}
+#services .service h4{font-size:13px}
+#services .service strong{color:var(--red);font-size:12px;font-weight:700;white-space:nowrap;flex:0 0 auto}
+#services .fine-print{margin:18px 0 14px}
+#services .service-actions{display:flex;flex-direction:column;align-items:stretch;gap:10px}
+#services .service-call{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px}
+#services .service-barbers{align-self:flex-start;min-height:48px}
+@media(max-width:600px){#services .service-list{grid-template-columns:1fr}#services .service{min-height:48px}#services .service strong{font-size:12px}}
