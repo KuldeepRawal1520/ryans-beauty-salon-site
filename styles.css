@@ -409,3 +409,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 #services .service-call{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px}
 #services .service-barbers{align-self:flex-start;min-height:48px}
 @media(max-width:600px){#services .service-list{grid-template-columns:1fr}#services .service{min-height:48px}#services .service strong{font-size:12px}}
+
+
+/* Woodbridge barber link and address note */
+.location-panel[data-location-panel="woodbridge"] .woodbridge-barbers-button{width:100%;min-height:52px;}
+.barber-location-note{margin:10px 0 28px;color:var(--dim);font-size:13px;line-height:1.6;text-align:center;}
+.barber-location-note a{color:#fff;text-decoration:underline;text-underline-offset:3px;}
