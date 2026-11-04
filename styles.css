@@ -420,3 +420,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media(min-width:768px){.nav{gap:clamp(8px,1.1vw,14px)}.nav-links{gap:clamp(7px,.85vw,12px);font-size:clamp(10px,.88vw,12px);white-space:nowrap}.nav-links a{white-space:nowrap}.nav .brand{flex:0 1 150px;max-width:150px}.nav .brand-logo{max-width:100%;height:auto}.nav-book{flex:0 0 auto;padding-inline:clamp(9px,1vw,14px);font-size:clamp(10px,.86vw,12px)}}
 .footer-links{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:11px}.footer-links a{white-space:nowrap}
 @media(max-width:767px){.footer-links{justify-content:flex-start;gap:10px 14px}.footer-links a{min-height:48px;display:inline-flex;align-items:center}}
+
+
+/* Shared Albion Cuts tab presentation */
+.gallery-card.albion-cut-card{aspect-ratio:3/4;min-height:0;padding:16px;border:1px solid rgba(201,206,214,.72);border-radius:14px;overflow:hidden;}
+.gallery-card.albion-cut-card img{object-position:var(--cut-position,50% 40%);aspect-ratio:3/4;object-fit:cover;}
+@media(max-width:767px){.gallery-section .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.gallery-card.albion-cut-card{padding:12px}}
+@media(min-width:768px){.gallery-section .gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}}
