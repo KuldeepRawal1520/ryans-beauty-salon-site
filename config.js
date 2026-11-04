@@ -44,7 +44,7 @@ window.SALON_CONFIG = {
     { file: "/images/albion-cut-07-textured-crop-skin-fade.jpg", width: 1200, height: 1600, objectPosition: "45% 35%", alt: "Textured crop skin fade haircut" },
     { file: "/images/albion-cut-08-taper-fade-mullet-beard.jpg", width: 1200, height: 1600, objectPosition: "60% 40%", alt: "Taper fade mullet haircut" },
     { file: "/images/albion-cut-09-curly-top-fade-beard.jpg", width: 1200, height: 1600, objectPosition: "65% 45%", alt: "Curly top fade haircut" }
-  ],,
+  ],
   socials: { instagram: "", facebook: "" }
 };
 // TODO confirm Woodbridge opening hours and exact business name
