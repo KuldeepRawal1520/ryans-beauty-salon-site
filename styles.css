@@ -464,3 +464,27 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 
 @media(min-width:768px){.nav{gap:clamp(8px,1.1vw,14px)}.nav-links{gap:clamp(7px,.85vw,12px);font-size:clamp(10px,.88vw,12px);white-space:nowrap;flex:1;justify-content:center;min-width:0}.nav-links a{white-space:nowrap}.nav .brand{flex:0 1 120px;max-width:120px}.nav .brand-logo{width:120px;max-width:100%;height:38px}.nav-book{flex:0 0 auto;padding-inline:clamp(8px,.9vw,12px);font-size:clamp(10px,.86vw,12px)}}
+
+/* Independent stylist service card and responsive service menu */
+@media(min-width:768px){
+  #services .services-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+  #services .independent-panel{margin-top:0}
+  #services .independent-card{width:min(100%,440px)}
+}
+@media(min-width:768px) and (max-width:1099px){
+  #services .service-list{grid-template-columns:1fr}
+}
+@media(max-width:767px){
+  #services .service-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;overflow:visible;padding-bottom:12px}
+  #services .service-tab{min-width:0;width:100%;min-height:48px;padding:8px 3px;font-size:clamp(10px,3.2vw,12px);letter-spacing:-.02em;white-space:nowrap}
+  #services .services-content{display:grid;grid-template-columns:minmax(0,1fr)}
+  #services .independent-card{width:100%}
+}
+#services .independent-panel[hidden],#services .services-content[hidden]{display:none!important}
+#services .independent-static-heading{font:700 20px var(--head);color:#fff;margin:24px 0 10px}
+#services .independent-card{margin:0;max-width:440px}
+#services .independent-label{display:inline-flex;align-self:flex-start;width:max-content;margin:0 0 8px;padding:4px 10px;border:1px solid rgba(228,0,43,.65);border-radius:999px;color:#fff;background:rgba(228,0,43,.14);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+#services .independent-location{margin:0 0 12px;color:var(--dim);font-size:12px}
+#services .independent-description{margin:0 0 9px;color:var(--silver);font-size:13px;line-height:1.6}
+#services .independent-card .barber-book{width:100%;min-height:52px;height:52px;margin-top:14px}
+#services .independent-card .barber-note{font-size:12px}

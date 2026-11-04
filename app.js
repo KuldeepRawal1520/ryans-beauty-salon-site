@@ -163,15 +163,42 @@
   });
 
   safeInit("service filters", () => {
-    const tabs = all(".service-tab"), groups = all(".service-group");
-    if (!tabs.length || !groups.length) return;
-    const select = tab => {
-      const index = Number(tab.dataset.category);
-      groups.forEach((group, i) => { group.hidden = i !== index; });
-      tabs.forEach(item => { const active = item === tab; item.classList.toggle("active", active); item.setAttribute("aria-selected", String(active)); });
+    const section = one("#services");
+    const tabs = section ? all(".service-tab", section) : [];
+    const groups = section ? all(".service-group", section) : [];
+    const content = section ? one(".services-content", section) : null;
+    const independent = section ? one(".independent-panel", section) : null;
+    if (!section || tabs.length < 3 || groups.length !== 2 || !content || !independent) return;
+    let activeTab = tabs.find(tab => tab.getAttribute("aria-selected") === "true") || tabs[0];
+    const applySelection = () => {
+      const index = Number(activeTab.dataset.category);
+      const desktop = window.matchMedia("(min-width:768px)").matches;
+      if (desktop) {
+        const showIndependent = index === 2;
+        content.hidden = showIndependent;
+        groups.forEach(group => { group.hidden = false; });
+        independent.hidden = !showIndependent;
+      } else {
+        content.hidden = false;
+        groups.forEach((group, i) => { group.hidden = i !== index; });
+        independent.hidden = index !== 2;
+      }
+      tabs.forEach(tab => {
+        const active = tab === activeTab;
+        tab.classList.toggle("active", active);
+        tab.setAttribute("aria-selected", String(active));
+        tab.setAttribute("aria-pressed", String(active));
+      });
     };
-    tabs.forEach(tab => tab.addEventListener("click", () => select(tab)));
-    select(tabs.find(tab => tab.getAttribute("aria-selected") === "true") || tabs[0]);
+    tabs.forEach(tab => tab.addEventListener("click", () => { activeTab = tab; applySelection(); }));
+    document.body.classList.add("services-enhanced");
+    applySelection();
+    window.addEventListener("resize", applySelection, { passive: true });
+    const independentConfig = cfg.services && cfg.services.independent;
+    if (independentConfig && independentConfig.tel) {
+      const call = one(".independent-card .barber-book", section);
+      if (call) call.setAttribute("href", "tel:" + String(independentConfig.tel).replace(/^tel:/, ""));
+    }
   });
 
   safeInit("gallery filters and lightbox", () => {
