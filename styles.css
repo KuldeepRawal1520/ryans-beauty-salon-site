@@ -461,3 +461,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .products-booking .products-phone-note{margin:12px 0 0;font-size:12px;color:var(--dim)}
 @media(min-width:768px) and (max-width:1099px){.products-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:767px){.products-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product-card{padding:8px}.product-photo-frame{border-radius:14px}.product-card-copy{padding:12px 3px 4px}.product-card h2{font-size:13px}}
+
+
+@media(min-width:768px){.nav{gap:clamp(8px,1.1vw,14px)}.nav-links{gap:clamp(7px,.85vw,12px);font-size:clamp(10px,.88vw,12px);white-space:nowrap;flex:1;justify-content:center;min-width:0}.nav-links a{white-space:nowrap}.nav .brand{flex:0 1 120px;max-width:120px}.nav .brand-logo{width:120px;max-width:100%;height:38px}.nav-book{flex:0 0 auto;padding-inline:clamp(8px,.9vw,12px);font-size:clamp(10px,.86vw,12px)}}
