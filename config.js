@@ -33,6 +33,18 @@ window.SALON_CONFIG = {
     { file: "/images/barber-work-07-top-bun-fade-design.jpg", width: 640, height: 641, objectPosition: "45% 55%", alt: "Top bun fade design" },
     { file: "/images/barber-work-10-top-bun-fade-part.jpg", width: 640, height: 641, objectPosition: "40% 55%", alt: "Top bun fade with part" }
   ],
+  albionCuts: [
+    { file: "/images/mens-fade.jpg", width: 1200, height: 1600, objectPosition: "50% 35%", alt: "Men's fade haircut" },
+    { file: "/images/albion-cut-01-low-taper-pompadour-stubble.jpg", width: 1200, height: 1600, objectPosition: "45% 35%", alt: "Low taper pompadour haircut" },
+    { file: "/images/albion-cut-02-textured-crop-high-fade-beard.jpg", width: 1200, height: 1600, objectPosition: "40% 40%", alt: "Textured crop high fade haircut" },
+    { file: "/images/albion-cut-03-slick-back-low-fade.jpg", width: 1200, height: 1600, objectPosition: "60% 45%", alt: "Slick back low fade haircut" },
+    { file: "/images/albion-cut-04-low-taper-slick-back-beard.jpg", width: 1200, height: 1600, objectPosition: "60% 40%", alt: "Low taper slick back haircut" },
+    { file: "/images/albion-cut-05-textured-fringe-taper-line-design.jpg", width: 1200, height: 1600, objectPosition: "35% 40%", alt: "Textured fringe taper haircut" },
+    { file: "/images/albion-cut-06-side-part-hard-part-fade-beard.jpg", width: 1200, height: 1600, objectPosition: "45% 45%", alt: "Side part hard part fade haircut" },
+    { file: "/images/albion-cut-07-textured-crop-skin-fade.jpg", width: 1200, height: 1600, objectPosition: "45% 35%", alt: "Textured crop skin fade haircut" },
+    { file: "/images/albion-cut-08-taper-fade-mullet-beard.jpg", width: 1200, height: 1600, objectPosition: "60% 40%", alt: "Taper fade mullet haircut" },
+    { file: "/images/albion-cut-09-curly-top-fade-beard.jpg", width: 1200, height: 1600, objectPosition: "65% 45%", alt: "Curly top fade haircut" }
+  ],,
   socials: { instagram: "", facebook: "" }
 };
 // TODO confirm Woodbridge opening hours and exact business name
