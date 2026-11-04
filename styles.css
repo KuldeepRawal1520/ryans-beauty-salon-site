@@ -415,3 +415,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .location-panel[data-location-panel="woodbridge"] .woodbridge-barbers-button{width:100%;min-height:52px;}
 .barber-location-note{margin:10px 0 28px;color:var(--dim);font-size:13px;line-height:1.6;text-align:center;}
 .barber-location-note a{color:#fff;text-decoration:underline;text-underline-offset:3px;}
+
+
+@media(min-width:768px){.nav{gap:clamp(8px,1.1vw,14px)}.nav-links{gap:clamp(7px,.85vw,12px);font-size:clamp(10px,.88vw,12px);white-space:nowrap}.nav-links a{white-space:nowrap}.nav .brand{flex:0 1 150px;max-width:150px}.nav .brand-logo{max-width:100%;height:auto}.nav-book{flex:0 0 auto;padding-inline:clamp(9px,1vw,14px);font-size:clamp(10px,.86vw,12px)}}
+.footer-links{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:11px}.footer-links a{white-space:nowrap}
+@media(max-width:767px){.footer-links{justify-content:flex-start;gap:10px 14px}.footer-links a{min-height:48px;display:inline-flex;align-items:center}}
