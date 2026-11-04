@@ -309,7 +309,7 @@
 
   safeInit("progressive scroll reveal", () => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const targets = all(".barbers-page .barbers-heading,.barbers-page .barber-card,.barbers-page .barber-closing,.barber-work-heading,.barber-work-tile,.section-heading,.service,.review-card");
+    const targets = all(".barbers-page .barbers-heading,.barbers-page .barber-card,.barbers-page .barber-closing,.barber-work-heading,.barber-work-tile,.albion-barber-feature,.product-card,.products-booking,.section-heading,.service,.review-card");
     if (!targets.length) return;
     if (!("IntersectionObserver" in window)) return;
     const observer = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -319,7 +319,7 @@
   });
   safeInit("desktop card tilt", () => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(pointer:fine) and (min-width:1200px)").matches) return;
-    const cards = all(".barber-card,.barber-work-tile,.service,.review-card");
+    const cards = all(".barber-card,.barber-work-tile,.albion-barber-feature,.product-card,.service,.review-card");
     cards.forEach(card => {
       if (!card) return;
       card.addEventListener("pointermove", event => {
@@ -352,9 +352,9 @@
 
   safeInit("barber work lightbox", () => {
     try {
-      const grid = one(".barber-work-grid");
-      if (!grid) return;
-      const tiles = all(".barber-work-tile", grid);
+      const grids = all(".barber-work-grid");
+      if (!grids.length) return;
+      const tiles = grids.flatMap(grid => all(".barber-work-tile", grid));
       if (!tiles.length) return;
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const makeButton = (className, label, pathData) => {
