@@ -40,7 +40,7 @@ function apply(){
   setLink(".service-barbers",id==="albion"?"/albion-barbers.html":"/barbers.html");
   const prodCall=one(".products-booking .button");if(prodCall)prodCall.href="tel:"+loc.tel;
   setText(".products-phone-note",loc.label+": "+loc.phone);
-  const statusText=status(loc);if(statusText)all(".hero .status-pill,.hero .open-pill,.hero .hero-open-status,.hero .hero-status-pill").forEach(n=>n.textContent=statusText);
+  const statusText=status(loc);if(statusText)setText("#open-status",statusText);const meta=one(".hero-meta > span:last-child");if(meta)meta.textContent=loc.address.split(",")[0];
  });
  safe("location services",()=>{
   const independent=one('#services .service-tab[data-category="2"]');
