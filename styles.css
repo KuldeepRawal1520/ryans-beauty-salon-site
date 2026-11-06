@@ -488,3 +488,50 @@ button, a { -webkit-tap-highlight-color: transparent; }
 #services .independent-description{margin:0 0 9px;color:var(--silver);font-size:13px;line-height:1.6}
 #services .independent-card .barber-book{width:100%;min-height:52px;height:52px;margin-top:14px}
 #services .independent-card .barber-note{font-size:12px}
+
+/* Location chooser progressive enhancement; without data-location existing content remains. */
+html[data-location="albion"] [data-loc="woodbridge"],html[data-location="woodbridge"] [data-loc="albion"]{display:none!important}
+html[data-location] .location-tabs,html[data-location] .visit-title{display:none!important}
+html:not([data-location]) .visit-selected-title{display:none!important}
+html[data-location="albion"] .visit-selected-title[data-loc="albion"],html[data-location="woodbridge"] .visit-selected-title[data-loc="woodbridge"]{display:block}
+.visit-selected-title{font:700 clamp(26px,3vw,42px)/1.2 var(--head);color:#fff;margin:12px 0 25px}
+html[data-location="woodbridge"] #services .service-tab[data-category="2"],html[data-location="woodbridge"] #services .independent-panel{display:none!important}
+html[data-location="woodbridge"] #services .service-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.location-barbers{padding-top:42px;padding-bottom:54px}
+.home-barber-grid{display:grid;grid-template-columns:1fr;gap:20px}
+.home-barber-card{max-width:100%;min-width:0}
+.home-barber-card .barber-photo{aspect-ratio:1/1;overflow:hidden}
+.home-barber-card .barber-photo img{width:100%;height:100%;object-fit:cover}
+.home-barber-card .barber-card-body{padding:16px}
+.home-barber-link{width:100%;min-height:48px;margin-top:10px;text-align:center}
+html[data-location="albion"] .home-barber-grid[data-loc="albion"]{max-width:380px;margin-inline:auto}
+@media(min-width:768px){.home-barber-grid[data-loc="woodbridge"]{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px){.home-barber-grid[data-loc="woodbridge"]{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.location-change{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:5px 9px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--silver);cursor:pointer;flex-shrink:0}
+.location-change svg{display:block}
+.location-change-copy{display:flex;flex-direction:column;align-items:flex-start;font:600 11px var(--head);line-height:1.25;white-space:nowrap}
+.location-change-copy small{font:500 9px var(--head);color:var(--dim)}
+.mobile-change-location{display:none}
+.location-chooser{position:fixed;inset:0;z-index:99999;min-height:100svh;display:grid;place-items:center;overflow-y:auto;padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:radial-gradient(ellipse at 50% 15%,rgba(228,0,43,.12),transparent 60%),var(--bg);color:#fff;opacity:1;transition:opacity .5s}
+.location-chooser:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:url("/images/grain.png")}
+.location-chooser-inner{position:relative;width:min(100%,940px);margin:auto;text-align:center}
+.location-chooser-logo{width:min(230px,60vw);height:auto;max-height:95px;object-fit:contain;margin:0 auto 24px}
+.location-chooser h1{font:800 clamp(28px,5vw,58px)/1.1 var(--head);margin:0 auto 15px;max-width:750px}
+.location-chooser-subtitle{color:var(--silver);font-size:clamp(12px,2vw,15px);margin:0 0 25px}
+.location-chooser-cards{display:grid;grid-template-columns:1fr;gap:14px}
+.location-choice-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;gap:7px;min-height:96px;padding:20px 22px;border:1px solid var(--line);border-radius:18px;background:radial-gradient(circle at var(--sheen-x,50%) 0%,rgba(228,0,43,.12),transparent 65%),#1f2226;color:#fff;cursor:pointer;transition:transform .25s,opacity .3s;animation:location-choice-in .45s both}
+.location-choice-card:nth-child(2){animation-delay:.09s}
+.location-choice-card strong{font:700 clamp(19px,3vw,28px) var(--head)}
+.location-choice-card span:not(:last-child){color:var(--silver);font-size:13px}
+.location-choice-card span:last-child{position:absolute;right:20px;top:50%;transform:translateY(-50%)}
+.location-choice-card:hover,.location-choice-card:focus-visible{border-color:var(--red);box-shadow:0 0 24px rgba(228,0,43,.14)}
+.location-choice-card:focus-visible,.location-change:focus-visible,.mobile-change-location:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+.location-chooser.is-closing{opacity:0;pointer-events:none}
+body.location-chooser-open{overflow:hidden}
+.location-hero-enter{animation:location-hero-in .5s both}
+@keyframes location-choice-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes location-hero-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:768px){.location-chooser-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.location-choice-card{min-height:175px;padding:30px}.nav-links{gap:clamp(8px,1vw,16px);font-size:clamp(11px,.9vw,13px)}.nav{gap:clamp(6px,.8vw,12px)}.location-change{padding-inline:10px}}
+@media(max-width:767px){.nav{height:64px!important;gap:5px!important}.nav .brand{flex:0 1 92px;min-width:0}.nav .brand-logo{max-width:92px;height:auto}.location-change{order:2;padding:5px 7px;min-width:0}.location-change-copy{font-size:10px}.location-change-copy small{display:none}.nav .menu-toggle{order:3;flex:0 0 38px}.nav .nav-book{display:none!important}.mobile-change-location{display:flex;align-items:center;gap:10px;min-height:48px;width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:8px}.location-chooser-logo{max-height:68px;margin-bottom:12px}.location-chooser-subtitle{margin-bottom:18px}.location-choice-card{padding:14px 17px}.location-chooser-inner{padding-block:8px}}
+@media(max-width:380px){.location-change-copy{font-size:9px}.nav .brand{flex-basis:85px}.nav .brand-logo{max-width:85px}}
+@media(prefers-reduced-motion:reduce){.location-choice-card,.location-hero-enter{animation:none!important;transform:none!important}.location-chooser{transition:opacity .15s}}
